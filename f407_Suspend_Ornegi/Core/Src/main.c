@@ -32,6 +32,8 @@ typedef struct
 {
 	volatile uint8_t gorevSuspended;
 	volatile uint32_t sonInterruptZamani;
+	volatile uint16_t gorev1BeklemeSure;
+	volatile uint16_t gorev2BeklemeSure;
 }programDegiskenleri;
 
 programDegiskenleri program;
@@ -274,11 +276,13 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
 		if (program.gorevSuspended)
 		{
-		   vTaskSuspend(BlinkGorevHandle);//BlinkGorev Taskı askıya aldık
+			program.gorev1BeklemeSure=250;
+			program.gorev2BeklemeSure=500;
 		}
 		else
 		{
-			vTaskResume(BlinkGorevHandle);//BlinkGorev1 Taskı devam ettirdik
+			program.gorev1BeklemeSure=400;
+			program.gorev1BeklemeSure=200;
 		}
 
 	}
@@ -295,15 +299,20 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 void BlinkGorevFonksiyonu(void *argument)
 {
   /* USER CODE BEGIN 5 */
+	program.gorev1BeklemeSure=500;
   /* Infinite loop */
   for(;;)
   {
     HAL_GPIO_WritePin(Gorev1_Led1_GPIO_Port, Gorev1_Led1_Pin, 1);
     HAL_GPIO_WritePin(Gorev1_Led2_GPIO_Port, Gorev1_Led2_Pin, 1);
-    vTaskDelay(1000/portTICK_PERIOD_MS);;//1000 ms
+    vTaskDelay(program.gorev1BeklemeSure/portTICK_PERIOD_MS);;//400 ms
     HAL_GPIO_WritePin(Gorev1_Led1_GPIO_Port, Gorev1_Led1_Pin, 0);
     HAL_GPIO_WritePin(Gorev1_Led2_GPIO_Port, Gorev1_Led2_Pin, 0);
-    vTaskDelay(1000/portTICK_PERIOD_MS);
+    vTaskDelay(program.gorev1BeklemeSure/portTICK_PERIOD_MS);
+
+    if(program.gorevSuspended==1)
+    	vTaskSuspend(BlinkGorevHandle);
+
 
   }
   /* USER CODE END 5 */
@@ -324,10 +333,13 @@ void BlinkGorev2Fonksiyon(void *argument)
   {
 	  HAL_GPIO_WritePin(Gorev2_Led1_GPIO_Port, Gorev2_Led1_Pin, 1);
 	  HAL_GPIO_WritePin(Gorev2_Led2_GPIO_Port, Gorev2_Led2_Pin, 1);
-	  vTaskDelay(1000/portTICK_PERIOD_MS);;//1000 ms
+	  vTaskDelay(250/portTICK_PERIOD_MS);;//250 ms
 	  HAL_GPIO_WritePin(Gorev2_Led1_GPIO_Port, Gorev2_Led1_Pin, 0);
 	  HAL_GPIO_WritePin(Gorev2_Led2_GPIO_Port, Gorev2_Led2_Pin, 0);
-	  vTaskDelay(1000/portTICK_PERIOD_MS);
+	  vTaskDelay(250/portTICK_PERIOD_MS);
+
+	  if(program.gorevSuspended==0)
+		  vTaskResume(BlinkGorevHandle);
   }
   /* USER CODE END BlinkGorev2Fonksiyon */
 }
