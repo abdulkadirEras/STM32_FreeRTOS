@@ -39,7 +39,7 @@ programDegiskenleri program;
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define debounceSuresi  100
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -254,7 +254,37 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	if(GPIO_Pin == Buton_Pin)
+	{
+		uint32_t simdikiZaman=HAL_GetTick();
+		if(simdikiZaman - program.sonInterruptZamani < debounceSuresi)
+		{
+			return;
+		}
+		program.sonInterruptZamani=HAL_GetTick();
 
+		// Toggle gorev durumu
+		if(program.gorevSuspended==0)
+			program.gorevSuspended=1;
+
+		else
+			program.gorevSuspended=0;
+
+		if (program.gorevSuspended)
+		{
+		   vTaskSuspend(BlinkGorevHandle);//BlinkGorev Taskı askıya aldık
+
+
+		}
+		else
+		{
+			vTaskResume(BlinkGorevHandle);//BlinkGorev1 Taskı devam ettirdik
+		}
+
+	}
+}
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_BlinkGorevFonksiyonu */
