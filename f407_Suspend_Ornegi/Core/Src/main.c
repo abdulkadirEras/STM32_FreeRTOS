@@ -22,6 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "stdio.h"
 
 /* USER CODE END Includes */
 
@@ -29,9 +30,11 @@
 /* USER CODE BEGIN PTD */
 typedef struct
 {
-	volatile bool gorevSuspended = false;
+	volatile uint8_t gorevSuspended;
 	volatile uint32_t sonInterruptZamani;
 }programDegiskenleri;
+
+programDegiskenleri program;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -143,6 +146,8 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_EVENTS */
   /* add events, ... */
+
+  program.gorevSuspended =0;
   /* USER CODE END RTOS_EVENTS */
 
   /* Start scheduler */
@@ -270,7 +275,7 @@ void BlinkGorevFonksiyonu(void *argument)
     vTaskDelay(1000/portTICK_PERIOD_MS);;//1000 ms
     HAL_GPIO_WritePin(Gorev1_Led1_GPIO_Port, Gorev1_Led1_Pin, 0);
     HAL_GPIO_WritePin(Gorev1_Led2_GPIO_Port, Gorev1_Led2_Pin, 0);
-    vTaskDelay(1000/portTICK_PERIOD_MS);;//1000 ms
+    vTaskDelay(1000/portTICK_PERIOD_MS);
 
   }
   /* USER CODE END 5 */
