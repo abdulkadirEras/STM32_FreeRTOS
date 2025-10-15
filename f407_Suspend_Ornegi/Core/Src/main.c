@@ -294,7 +294,12 @@ void BlinkGorev2Fonksiyon(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+	  HAL_GPIO_WritePin(Gorev2_Led1_GPIO_Port, Gorev2_Led1_Pin, 1);
+	  HAL_GPIO_WritePin(Gorev2_Led2_GPIO_Port, Gorev2_Led2_Pin, 1);
+	  vTaskDelay(1000/portTICK_PERIOD_MS);;//1000 ms
+	  HAL_GPIO_WritePin(Gorev2_Led1_GPIO_Port, Gorev2_Led1_Pin, 0);
+	  HAL_GPIO_WritePin(Gorev2_Led2_GPIO_Port, Gorev2_Led2_Pin, 0);
+	  vTaskDelay(1000/portTICK_PERIOD_MS);
   }
   /* USER CODE END BlinkGorev2Fonksiyon */
 }
