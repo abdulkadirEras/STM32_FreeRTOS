@@ -112,6 +112,9 @@ int main(void)
   MX_ADC1_Init();
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
+  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);
+  // Calibrate The ADC On Power-Up For Better Accuracy
+
 
   /* USER CODE END 2 */
 
