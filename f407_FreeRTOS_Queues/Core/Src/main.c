@@ -59,6 +59,11 @@ const osThreadAttr_t LEDParlakGorev_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
+/* Definitions for potKuyruk */
+osMessageQueueId_t potKuyrukHandle;
+const osMessageQueueAttr_t potKuyruk_attributes = {
+  .name = "potKuyruk"
+};
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -113,7 +118,6 @@ int main(void)
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);
-  // Calibrate The ADC On Power-Up For Better Accuracy
 
 
   /* USER CODE END 2 */
@@ -132,6 +136,10 @@ int main(void)
   /* USER CODE BEGIN RTOS_TIMERS */
   /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
+
+  /* Create the queue(s) */
+  /* creation of potKuyruk */
+  potKuyrukHandle = osMessageQueueNew (16, sizeof(uint16_t), &potKuyruk_attributes);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
@@ -360,8 +368,11 @@ void PotGorevFonksiyonu(void *argument)
 {
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
+
+
   for(;;)
   {
+
     osDelay(1);
   }
   /* USER CODE END 5 */
