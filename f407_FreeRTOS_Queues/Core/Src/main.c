@@ -368,12 +368,24 @@ void PotGorevFonksiyonu(void *argument)
 {
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
+	uint16_t adcDeger=0;
 
+	osStatus sistemDurum;
 
   for(;;)
   {
+	  HAL_ADC_Start(&hadc1);
+	  HAL_ADC_PollForConversion(&hadc1, 1);
+	  adcDeger = HAL_ADC_GetValue(&hadc1);
+	  // oMessageQueuePut(Kuyruk ID, Veri Adresi, Öncelik (0 en düşük), Bekleme Süresi (Timeout))
+	  osMessageQueuePut(potKuyrukHandle, &adcDeger, 0, 1);
 
-    osDelay(1);
+	  if(sistemDurum!=osOK)
+	  {
+		  //kuyruk dolu
+	  }
+
+    vTaskDelay(1);
   }
   /* USER CODE END 5 */
 }
@@ -389,8 +401,31 @@ void LEDParlakGorevFonksiyon(void *argument)
 {
   /* USER CODE BEGIN LEDParlakGorevFonksiyon */
   /* Infinite loop */
+	uint16_t potDeger;
+	osStatus sistemDurumu;
   for(;;)
   {
+
+
+
+
+
+	 // 1. Kuyruktan Veriyi Oku
+	 // osMessageQueueGet(Kuyruk ID, Veri Adresi, Öncelik, Bekleme Süresi)
+	 sistemDurumu = osMessageQueueGet(potKuyrukHandle, &potDeger, NULL, osWaitForever);
+	 // osWaitForever: Veri gelene kadar bu görevi askıya al.
+	 if (sistemDurumu == osOK)
+	 {
+	    TIM4->CCR1=(potDeger<<4);
+	 }
+	 else
+	 {
+	 // Nadiren olur, ancak hata durumlarını (örn. kuyruğun silinmesi) ele alın.
+	 }
+
+	 // Bu görev, osWaitForever kullandığı için ek bir osDelay'e ihtiyaç duymaz.
+	 // Yalnızca veri geldiğinde uyanır.
+
     osDelay(1);
   }
   /* USER CODE END LEDParlakGorevFonksiyon */
